@@ -1,0 +1,47 @@
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "com.escape.PixelStrip",
+  "ComponentVersion": "1.0.0",
+  "ComponentDescription": "A component that subscribes to messages.",
+  "ComponentPublisher": "Amazon",
+  "ComponentConfiguration": {
+    "DefaultConfiguration": {
+      "accessControl": {
+        "aws.greengrass.ipc.pubsub": {
+          "com.escape.PixelStrip:pubsub:1": {
+            "policyDescription": "Allows access to publish and subscribe to all topics.",
+            "operations": [
+              "aws.greengrass#SubscribeToTopic"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        },
+        "aws.greengrass.ipc.mqttproxy": {
+         "com.example.relay:mqttproxy:1": {
+           "policyDescription": "Allows access to publish/subscribe to all topics.",
+           "operations": [
+             "aws.greengrass#PublishToIoTCore",
+             "aws.greengrass#SubscribeToIoTCore"
+           ],
+           "resources": [
+              "*"
+           ]
+         }
+        }
+      }
+    }
+  },
+  "Manifests": [
+    {
+      "Platform": {
+        "os": "linux"
+      },
+      "Lifecycle": {
+        "Install": "python3 -m pip install --user awsiotsdk",
+        "Run": "python3 -u {artifacts:path}/PixelStrip.py"
+      }
+    }
+  ]
+}
