@@ -1,0 +1,41 @@
+1. On local workstation (terminal window 1)
+mkdir /tmp/mylayer && cd /tmp/mylayer
+echo opencv-python==4.4.0.42 > ./requirements.txt
+echo numpy==1.24.2 >> ./requirements.txt
+echo pillow >> ./requirements.txt
+
+2. On local workstation (terminal window 2)
+
+docker run -it -v /tmp/mylayer:/mylayer  lambci/lambda:build-python3.8 bash
+
+
+The above command will put you into the docker container.
+Inside the container:
+cd /mylayer
+pip install --no-deps -t python/lib/python3.8/site-packages/ -r requirements.txt
+yum install -y mesa-libGL
+cp -v /usr/lib64/libGL.so.1 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libGL.so.1.7.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libgthread-2.0.so.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libgthread-2.0.so.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libglib-2.0.so.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libGLX.so.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libX11.so.6 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libXext.so.6 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libGLdispatch.so.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libGLESv1_CM.so.1.2.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libGLX_mesa.so.0.0.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libGLESv2.so.2.1.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libxcb.so.1 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libXau.so.6 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /usr/lib64/libXau.so.6 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+cp -v /lib64/libGLdispatch.so.0.0.0 /mylayer/python/lib/python3.8/site-packages/opencv_python.libs/
+3. On local workstation again (terminal window 1)
+Pack the python folder into mylayer.zip.
+zip -r -9 mylayer.zip python
+
+
+aws s3 cp mylayer.zip s3://lambda-layer-escaperoom
+aws lambda publish-layer-version --layer-name oceancv2 --description "oceancv2" --content S3Bucket=lambda-layer-escaperoom,S3Key=mylayer.zip --compatible-runtimes python3.8
+
+
